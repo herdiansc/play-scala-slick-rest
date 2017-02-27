@@ -12,13 +12,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /*
  * Product Case Class
 **/
-case class Product(id:Long, title: Option[String], description: Option[String], price:Option[Long])
+case class Product(id:Option[Long], title: Option[String], description: Option[String], price:Option[Long])
 
 /*
  * Product Table Definition
 **/
 class ProductTable(tag: Tag) extends Table[Product](tag, "products") {
-    def id = column[Long]("id", O.PrimaryKey,O.AutoInc)
+    def id = column[Option[Long]]("id", O.PrimaryKey,O.AutoInc)
     def title = column[Option[String]]("title")
     def description = column[Option[String]]("description")
     def price = column[Option[Long]]("price")
@@ -50,4 +50,7 @@ class ProductDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvid
           result <- db.run(list)
         } yield Page(result, page, limit, totalRows)
     }
+    
+    def insert(product: Product): Future[Unit] = db.run(products += product).map(_ => "Success") 
+//println((products += product).statements.head)
 }
