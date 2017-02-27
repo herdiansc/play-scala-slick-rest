@@ -48,9 +48,11 @@ class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
             e => Future { BadRequest( JsError.toFlatJson(e) ) }
         }
     }
-
+    
+    // CURRENT: It response null when empty result
+    // TODO: Handle it with notfound exception
     def read(id: Long) = Action.async { request =>
-        productDao.view(id).map { data => 
+        productDao.view(id).map { data =>
             Ok(Json.toJson(data)).as("application/json")
         }
     }
