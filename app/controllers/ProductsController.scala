@@ -53,15 +53,18 @@ class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
         productDao.view(id).map { data =>
             data match {
                 case Some(product) => Ok(Json.toJson(product)).as("application/json")
-                case None => NotFound("not found")
+                case None => UnprocessableEntity
             }
         }
     }
     
     def update(id: Long) = Action.async(parse.json) { request => 
         request.body.validate[Product].map { product =>
-            productDao.update(id, product).map {
-                result => Created(Json.obj("status" -> "success")).as("application/json")
+            productDao.update(id, product).map { result =>
+                result match {
+                    case true => Ok(Json.obj("status" -> "success")).as("application/json")
+                    case false => UnprocessableEntity
+                }
             }.recoverWith {
                 case e => Future { InternalServerError("ERROR: " + e ) }
             }
@@ -71,8 +74,11 @@ class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
     }
     
     def delete(id: Long) = Action.async { request =>
-        productDao.delete(id).map {
-            result => Ok(Json.obj("status" -> "success")).as("application/json")
+        productDao.delete(id).map { result =>
+            result match {
+                case true => Ok(Json.obj("status" -> "success")).as("application/json")
+                case false => UnprocessableEntity
+            }
         }.recoverWith {
             case e => Future { InternalServerError("ERROR: " + e ) }
         }

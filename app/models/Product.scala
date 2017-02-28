@@ -52,17 +52,20 @@ class ProductDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvid
         } yield Page(result, page, limit, totalRows)
     }
     
-    // TODO: return success | failed
     def insert(product: Product): Future[Unit] = db.run(products += product).map(_ => "Success")
     
     // TODO:
     // - update only present field
-    // - return success | failed
-    def update(id: Long, product: Product): Future[Unit] = {
+    def update(id: Long, product: Product): Future[Boolean] = {
         val newProduct: Product = product.copy(Some(id))
-        db.run(products.filter(_.id === id).update(newProduct)).map( _ => ("Success") )
+        db.run(products.filter(_.id === id).update(newProduct)).map { affectedRows => 
+            affectedRows > 0
+        }
     }
     
-    // TODO: return success | failed
-    def delete(id: Long): Future[Unit] = db.run(products.filter(_.id === id).delete).map( _ => ("Success") )
+    def delete(id: Long): Future[Boolean] = {
+        db.run(products.filter(_.id === id).delete).map { affectedRows =>
+            affectedRows > 0
+        }
+    }
 }
