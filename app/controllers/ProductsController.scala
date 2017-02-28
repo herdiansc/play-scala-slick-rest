@@ -17,14 +17,14 @@ class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
         (JsPath \ "price").readNullable[Long]
     )(Product.apply _)
 
-    implicit val productFormat: Writes[Product] = (
+    implicit val productWrite: Writes[Product] = (
         (JsPath \ "id").write[Option[Long]] and
         (JsPath \ "title").write[Option[String]] and 
         (JsPath \ "description").write[Option[String]] and 
         (JsPath \ "price").write[Option[Long]]
     )(unlift(Product.unapply))
 
-    implicit val pageFormat: Writes[Page] = (
+    implicit val pageWrite: Writes[Page] = (
         (JsPath \ "rows").write[Seq[Product]] and 
         (JsPath \ "page").write[Int] and 
         (JsPath \ "limit").write[Long] and 
@@ -49,11 +49,32 @@ class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
         }
     }
     
-    // CURRENT: It response null when empty result
-    // TODO: Handle it with notfound exception
     def read(id: Long) = Action.async { request =>
         productDao.view(id).map { data =>
-            Ok(Json.toJson(data)).as("application/json")
+            data match {
+                case Some(product) => Ok(Json.toJson(product)).as("application/json")
+                case None => NotFound("not found")
+            }
+        }
+    }
+    
+    def update(id: Long) = Action.async(parse.json) { request => 
+        request.body.validate[Product].map { product =>
+            productDao.update(id, product).map {
+                result => Created(Json.obj("status" -> "success")).as("application/json")
+            }.recoverWith {
+                case e => Future { InternalServerError("ERROR: " + e ) }
+            }
+        }.recoverTotal {
+            e => Future { BadRequest( JsError.toFlatJson(e) ) }
+        }
+    }
+    
+    def delete(id: Long) = Action.async { request =>
+        productDao.delete(id).map {
+            result => Ok(Json.obj("status" -> "success")).as("application/json")
+        }.recoverWith {
+            case e => Future { InternalServerError("ERROR: " + e ) }
         }
     }
 }

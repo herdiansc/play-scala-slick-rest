@@ -2,9 +2,11 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET   /products             controllers.ProductsController.index(page:Int ?= 1, limit:Int ?= 10)
-POST  /products             controllers.ProductsController.create
-GET   /products/:id         controllers.ProductsController.read(id: Long)
+GET     /products             controllers.ProductsController.index(page:Int ?= 1, limit:Int ?= 10)
+POST    /products             controllers.ProductsController.create
+GET     /products/:id         controllers.ProductsController.read(id: Long)
+PUT     /products/:id         controllers.ProductsController.update(id: Long)
+DELETE  /products/:id         controllers.ProductsController.delete(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file)

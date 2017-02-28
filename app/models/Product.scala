@@ -40,7 +40,8 @@ class ProductDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvid
     def count(): Future[Int] = {
         db.run(products.map(_.id).length.result)
     }
-
+    
+    // TODO: add filtering functionality
     def list(page: Int = 1, limit: Int = 10): Future[Page] = {
         val offset = limit * (page-1)
 
@@ -51,6 +52,17 @@ class ProductDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvid
         } yield Page(result, page, limit, totalRows)
     }
     
-    def insert(product: Product): Future[Unit] = db.run(products += product).map(_ => "Success") 
-//println((products += product).statements.head)
+    // TODO: return success | failed
+    def insert(product: Product): Future[Unit] = db.run(products += product).map(_ => "Success")
+    
+    // TODO:
+    // - update only present field
+    // - return success | failed
+    def update(id: Long, product: Product): Future[Unit] = {
+        val newProduct: Product = product.copy(Some(id))
+        db.run(products.filter(_.id === id).update(newProduct)).map( _ => ("Success") )
+    }
+    
+    // TODO: return success | failed
+    def delete(id: Long): Future[Unit] = db.run(products.filter(_.id === id).delete).map( _ => ("Success") )
 }
