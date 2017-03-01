@@ -6,30 +6,9 @@ import javax.inject.Inject
 import scala.concurrent.Future
 import models.{Product, ProductDAO, Page}
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.libs.functional.syntax._
+//import play.api.libs.functional.syntax._
 
 class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
-
-    implicit val productRead: Reads[Product] = (
-        (JsPath \ "id").readNullable[Long] and
-        (JsPath \ "title").readNullable[String] and 
-        (JsPath \ "description").readNullable[String] and 
-        (JsPath \ "price").readNullable[Long]
-    )(Product.apply _)
-
-    implicit val productWrite: Writes[Product] = (
-        (JsPath \ "id").write[Option[Long]] and
-        (JsPath \ "title").write[Option[String]] and 
-        (JsPath \ "description").write[Option[String]] and 
-        (JsPath \ "price").write[Option[Long]]
-    )(unlift(Product.unapply))
-
-    implicit val pageWrite: Writes[Page] = (
-        (JsPath \ "rows").write[Seq[Product]] and 
-        (JsPath \ "page").write[Int] and 
-        (JsPath \ "limit").write[Long] and 
-        (JsPath \ "total").write[Long]
-    )(unlift(Page.unapply))
 
 	def index(page: Int, limit:Int) = Action.async { request =>
         productDao.list(page = page, limit = limit).map { data => 
