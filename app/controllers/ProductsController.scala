@@ -9,6 +9,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
 
+    // ISSUES:
+    // - Error when fetching 13 data with page=7, and limit=2(ex: http://localhost:9000/products?page=7&limit=2)
 	def index(page: Int, limit:Int) = Action.async { request =>
         productDao.list(page = page, limit = limit).map { data => 
             Ok(Json.toJson(data)).as("application/json")

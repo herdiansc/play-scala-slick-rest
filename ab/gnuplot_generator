@@ -9,7 +9,7 @@ touch $3
 
 echo "set terminal png" > plot
 echo "set output \"$3.png\"" >>plot
-echo "set title \"$4\"" >>plot
+echo "set title \"$3 on $4\"" >>plot
 echo "set size 1,0.7" >>plot
 echo "set grid y" >> plot
 echo "set xlabel \"Request\"" >> plot
