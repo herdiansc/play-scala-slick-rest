@@ -30,8 +30,7 @@ class ProductDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvid
 
         for {
           totalRows <- count()
-          list = products.drop(offset).take(limit).result
-          result <- db.run(list)
+          result <- db.run(products.drop(offset).take(limit).result)
         } yield Page(result, page, limit, totalRows)
     }
     

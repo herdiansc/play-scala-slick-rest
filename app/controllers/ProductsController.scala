@@ -6,7 +6,6 @@ import javax.inject.Inject
 import scala.concurrent.Future
 import models.{Product, ProductDAO, Page}
 import scala.concurrent.ExecutionContext.Implicits.global
-//import play.api.libs.functional.syntax._
 
 class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
 

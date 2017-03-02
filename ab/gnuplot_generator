@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+echo -e "Executing bench on $4\nPlease, wait..."
+
+ab -c $1 -n $2 -g $3 $4
+
+touch $3
+
+echo "set terminal png" > plot
+echo "set output \"$3.png\"" >>plot
+echo "set title \"$4\"" >>plot
+echo "set size 1,0.7" >>plot
+echo "set grid y" >> plot
+echo "set xlabel \"Request\"" >> plot
+echo "set ylabel \"Response time (ms)\"" >> plot
+echo "plot \"$3\" using 9 smooth sbezier with lines title \"line:\"" >>plot
+
+gnuplot plot
+
+rm plot
+rm $3
+
+gvfs-open $3.png
+#USE BELOW IF NOT IN GNOME
+#xdg-open $IMAGEN_RESULT
