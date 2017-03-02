@@ -23,7 +23,7 @@ class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
                 case e => Future { InternalServerError("ERROR: " + e )}
             }
         }.recoverTotal {
-            e => Future { BadRequest( JsError.toFlatJson(e) ) }
+            e => Future { BadRequest( Json.obj("status" -> "fail", "data" -> JsError.toFlatJson(e)) ) }
         }
     }
     
@@ -47,7 +47,7 @@ class ProductsController @Inject() (productDao: ProductDAO) extends Controller {
                 case e => Future { InternalServerError("ERROR: " + e ) }
             }
         }.recoverTotal {
-            e => Future { BadRequest( JsError.toFlatJson(e) ) }
+            e => Future { BadRequest( Json.obj("status" -> "fail", "data" -> JsError.toFlatJson(e)) ) }
         }
     }
     
